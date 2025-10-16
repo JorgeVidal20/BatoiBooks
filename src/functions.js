@@ -1,7 +1,7 @@
 function getBookById (books, bookId){
     let libros = books.find(libro => libro.id == bookId);
     if(!libros){
-        return "Error";
+        throw new Error('Error');
     }else{
         return libros;
     }
@@ -11,49 +11,50 @@ function getBookById (books, bookId){
 function getBookIndexById(books, bookId) {
     let libros = books.find(libro => libro.id == bookId);
     if(!libros){
-        return "Error";
+        throw new Error('Error');
     }else{
         return books.indexOf(libros);
     }
 }
 
-function BookExists(books,userId,moduleCode){
-    let tieneLibro = books.find(books => books.userId == userId && books.moduleCode == moduleCode); 
+function bookExists(books,userId,moduleCode){
+    let tieneLibro = books.find(books => books.userId === userId && books.moduleCode === moduleCode); 
         if(!tieneLibro){
-            return "Error";
+            return false;
         }else{
-            return "El usuario ya tiene un libro con ese codigo";
+            return true;
         }
     
 }
 
-function BooksFromUser(books,userId){
+function booksFromUser(books,userId){
     let librosUsuario = books.filter(books => books.userId == userId);
 
     return librosUsuario;
 }
 
-function BooksFromModule(books,moduleCode){
+function booksFromModule(books,moduleCode){
     let librosUsuario = books.filter(books => books.moduleCode == moduleCode);
 
     return librosUsuario;
 }
 
-function BooksCheeperThan(books,price){
+function booksCheeperThan(books,price){
     let librosPrecio = books.filter(books => books.price <= price);
 
     return librosPrecio;
 }
 
-function booksWhitStatus(books,status){
+function booksWithStatus(books,status){
     let librosConEseEstado = books.filter(books => books.status == status);
 
     return librosConEseEstado;
 }
 
 function averagePriceOfBooks(books){
+    if (books.length === 0) return "0.00 €";
     let libroPrecioMedio = books.reduce((total,book) => total += book.price, 0);
-    return (libroPrecioMedio / books.length).toFixed(2) + "€";
+    return (libroPrecioMedio / books.length).toFixed(2) + " €";
 }
 
 function booksOfTypeNotes(books){
@@ -69,14 +70,14 @@ function booksNotSold(books){
 function incrementPriceOfbooks(books,percentage){
     return books.map(libro => ({
         ...libro,
-        price:libro.price + libro.price * (percentage / 100)
+        price: parseFloat((libro.price * (1 + percentage)).toFixed(2))
     }));
 }
 function getUserById(users,userId){
     let usuarioId = users.find(users => users.id === userId);
 
     if(!usuarioId){
-        return "Error";
+        throw new Error('Error');
     }else{
     return usuarioId;
     }
@@ -84,7 +85,7 @@ function getUserById(users,userId){
 function getUserIndexById(users,userId){
     let usuarioPosicionArray = users.findIndex(users => users.id === userId);
     if(usuarioPosicionArray == -1){
-        return "Error";
+        throw new Error('Error');
     }else{
     return usuarioPosicionArray;
     }
@@ -94,7 +95,7 @@ function getUserByNickName(users,nick){
     let usuarioConNick = users.find(users => users.nick === nick);
 
     if(!usuarioConNick){
-        return "Error";
+        throw new Error('Error');
     }else{
         return usuarioConNick;
     }
@@ -104,12 +105,12 @@ function getModuleByCode(modules, moduleCode){
     let modulo = modules.find(modules => modules.code == moduleCode);
 
     if(!modulo){
-        return "Error";
+        throw new Error('Error');
     }else{
         return modulo;
     }
     
 }
-export{getBookById,getBookIndexById,BookExists,BooksFromUser,BooksFromModule,
-    BooksCheeperThan,booksWhitStatus, averagePriceOfBooks,booksOfTypeNotes,
+export{getBookById,getBookIndexById,bookExists,booksFromUser,booksFromModule,
+    booksCheeperThan,booksWithStatus, averagePriceOfBooks,booksOfTypeNotes,
     booksNotSold,incrementPriceOfbooks,getUserById,getUserIndexById,getUserByNickName,getModuleByCode}

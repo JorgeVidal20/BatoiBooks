@@ -15,11 +15,12 @@ document.querySelector('#app').innerHTML = `
   </div>
 `;
 
-let librosUsuario = functions.BooksFromUser(data.books, 4);
+let librosUsuario = functions.booksFromUser(data.books, 4);
 console.log(librosUsuario);
 
-let librosModulosEstado = functions.booksWhitStatus(functions.BooksFromModule(data.books, "5021"), "good");
+let librosModulosEstado = functions.booksWithStatus(functions.booksFromModule(data.books, "5021"), "good");
 console.log(librosModulosEstado);
 
 let incrementoPrecioLibros = functions.incrementPriceOfbooks(data.books, 10);
 console.log(incrementoPrecioLibros);
+
