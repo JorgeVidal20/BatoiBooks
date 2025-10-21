@@ -10,7 +10,7 @@ document.querySelector('#app').innerHTML = `
       <button id="counter" type="button"></button>
     </div>
     <p class="read-the-docs">
-      Abre la consola para ver el resultado
+      Abre la consola para ver el resultado.
     </p>
   </div>
 `;
