@@ -1,19 +1,20 @@
 import Module from './Module.class.js'
 
 const NOTES = 'Apunts'
-let NexId = 1;
+
 
 export default class Modules{
 
 constructor(){
     this.data = [];
+    this.nextId = 1;
 }
 
 populate(data){
     const modulesArray = Array.isArray(data) ? data : data?.modules || [];
-        this.data = modulesArray.map(item => new Module(item))
-        const maxId = this.data.reduce((max, item) => item.id > max ? item.id : max , 0);
-        nextId = maxId + 1
+        this.data = modulesArray.map(item => new Module(item.code, item.cliteral, item.vliteral, item.courseId))
+        const maxId = this.data.reduce((max, item) => item.code > max ? item.code : max , 0);
+        this.nextId = maxId + 1
     }
 
     toString(){

@@ -1,27 +1,25 @@
 import Book from './Book.class.js'
 
 const NOTES = 'Apunts'
-let nextId = 1;
+
 
 export default class Books{
     constructor (){
         this.data = [];
+        this.nextId = 1;
     }
 
     populate(data){
         const booksArray = Array.isArray(data) ? data : data?.books || [];
         this.data = data.map(item => new Book(item))
         const maxId = this.data.reduce((max, item) => item.id > max ? item.id : max , 0);
-        nextId = maxId + 1
+        this.nextId = maxId + 1;
     }
 
     addBook(obj){
         let nuevoLibro = new Book(obj);
-        if(obj.id === undefined && this.data.length === 0) {
-            nuevoLibro.id = 1;
-        }else{
-            obj.id = nextId;
-        }
+        nuevoLibro.id = this.nextId;
+        this.nextId++;
         this.data.push(nuevoLibro);
         return nuevoLibro;
     }
@@ -36,12 +34,14 @@ export default class Books{
 
     }
 
-    changeUser(obj){
+    changeBook(obj){
         let posicion = this.data.findIndex(book => book.id === obj.id);
         if(posicion == -1){
             throw new Error('Error');
         }else{
-            this.data.splice(posicion, 1, obj);
+            let nuevoBook = new Book(obj);
+            this.data.splice(posicion, 1, nuevoBook);
+            return nuevoBook;
         }
     }
 
@@ -68,7 +68,7 @@ export default class Books{
     if(!libros){
         throw new Error('Error');
     }else{
-        return books.indexOf(libros);
+        return this.data.indexOf(libros);
     }
 }
 

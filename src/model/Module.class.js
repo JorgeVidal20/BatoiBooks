@@ -1,13 +1,13 @@
 export default class Module{
-    constructor(code,cliteral,viteral,courseld){
+    constructor(code,cliteral,vliteral,courseId){
         this.code = code;
         this.cliteral = cliteral;
-        this.viteral = viteral;
-        this.courseld = courseld;
+        this.vliteral = vliteral;
+        this.courseId = courseId;
     }
     
     toString(){
-        return this.code + this.cliteral + this.courseld
-        + this.viteral + this.courseld
+        return this.code + this.cliteral 
+        + this.vliteral + this.courseId;
     }
 }
