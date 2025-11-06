@@ -9,4 +9,8 @@ export default class User{
     toString(){
         return this.id + this.email + this.nick + this.password
     }
+
+     getID(){
+        return this.id;
+    }
 }

@@ -1,6 +1,6 @@
 import Book from './Book.class.js'
+import * as api from '../services/api.js'
 
-const NOTES = 'Apunts'
 
 
 export default class Books{
@@ -9,38 +9,63 @@ export default class Books{
         this.nextId = 1;
     }
 
-    populate(data){
-        const booksArray = Array.isArray(data) ? data : data?.books || [];
-        this.data = data.map(item => new Book(item))
+    async populate(){
+        //const booksArray = Array.isArray(data) ? data : data?.books || [];
+        //this.data = data.map(item => new Book(item));
+
+        let data =  await api.getDBBooks();
+        this.data = data.map(item => new Book(item));
         const maxId = this.data.reduce((max, item) => item.id > max ? item.id : max , 0);
         this.nextId = maxId + 1;
     }
 
-    addBook(obj){
-        let nuevoLibro = new Book(obj);
-        nuevoLibro.id = this.nextId;
-        this.nextId++;
-        this.data.push(nuevoLibro);
-        return nuevoLibro;
+     async addBook(obj){
+        
+        let respuestaLibro = await api.addDBBook(obj);
+        if(respuestaLibro){
+            let nuevoLibro = new Book(respuestaLibro);
+            this.data.push(nuevoLibro);
+            if (nuevoLibro.id >= this.nextId) {
+            this.nextId = nuevoLibro.id + 1;
+        }
+            return nuevoLibro;
+        }else{
+            throw new Error ('Error');
+            
+        }
+        
+
     }
 
-    removeBook(id){
+    async removeBook(id){
+
         let posicion = this.data.findIndex(book => book.id === id);
         if(posicion != -1){
+            let respuestaLibro = await api.removeDBBook(id);
+            if(respuestaLibro){
             this.data.splice(posicion, 1);
+            }else{
+                throw new Error ("Error");
+            
+            } 
         }else{
             throw new Error('Error');
         }
 
     }
 
-    changeBook(obj){
+    async changeBook(obj){
         let posicion = this.data.findIndex(book => book.id === obj.id);
         if(posicion == -1){
             throw new Error('Error');
         }else{
             let nuevoBook = new Book(obj);
-            this.data.splice(posicion, 1, nuevoBook);
+            let respuestaLibro = await api.changeDBBook(obj);
+            if(respuestaLibro){
+                this.data.splice(posicion, 1, nuevoBook);
+            }else{
+                throw new Error('Error');
+            }
             return nuevoBook;
         }
     }
@@ -122,11 +147,6 @@ export default class Books{
     return librosNoVendidos;
 }
 
- incrementPriceOfbooks(percentage){
-    return this.data.map(libro => ({
-        ...libro,
-        price: parseFloat((libro.price * (1 + percentage)).toFixed(2))
-    }));
-}
+ 
 
 }

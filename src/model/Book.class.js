@@ -25,4 +25,8 @@ export default class Book{
         "\nComments: " + this.comments + 
         "Sold date: " + this.soldDate;
     }
+
+    getID(){
+        return this.id;
+    }
 }

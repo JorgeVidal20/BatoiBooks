@@ -1,6 +1,6 @@
 import User from './User.class.js'
+import * as api from '../services/api.js'
 
-const NOTES = 'Apunts'
 
 
 export default class Users{
@@ -9,37 +9,56 @@ export default class Users{
         this.nextId = 1;
     }
     
-    populate(data){
-        const userArray = Array.isArray(data) ? data : data?.user || [];
-            this.data = userArray.map(item => new User(item.id,item.nick, item.email, item.password ))
-            const maxId = this.data.reduce((max, item) => item.id > max ? item.id : max , 0);
-            this.nextId = maxId + 1;
+    async populate(){
+        //const userArray = Array.isArray(data) ? data : data?.user || [];
+
+          let user =  await api.getDBUsers();
+          this.data = user.map(item => new User(item.id,item.nick, item.email, item.password ));
+          const maxId = this.data.reduce((max, item) => item.id > max ? item.id : max , 0);
+          this.nextId = maxId + 1;
         }
 
-    addUser(obj){
-        let nuevoUsuario = new User(obj.id,obj.nick,obj.email,obj.password);
-        nuevoUsuario.id = this.nextId;
-        this.nextId++;
-        this.data.push(nuevoUsuario);
-        return nuevoUsuario;
-    }
-
-    removeUser(id){
-        let posicion = this.data.findIndex(user => user.id === id);
-        if(posicion != -1){
-            this.data.splice(posicion, 1);
+    async addUser(obj){
+        let respuestaLibro = await api.addDBUser(obj);
+        if(respuestaLibro){
+            let nuevoUsuario = new User(respuestaLibro.id,respuestaLibro.nick,respuestaLibro.email,respuestaLibro.password);
+            this.data.push(nuevoUsuario);
+            if (nuevoUsuario.id >= this.nextId) {
+            this.nextId = nuevoUsuario.id + 1;
+        }
+            return nuevoUsuario;
         }else{
             throw new Error('Error');
         }
     }
 
-    changeUser(obj){
+    async removeUser(id){
+        let posicion = this.data.findIndex(user => user.id === id);
+        if(posicion != -1){
+            let respuestaLibro = await api.removeDBUser(id);
+            if(respuestaLibro ){
+                this.data.splice(posicion, 1);
+            }else{
+            throw new Error('Error');
+            }
+        }else{
+            throw new Error('Error');
+        }
+    }
+
+    async changeUser(obj){
         let posicion = this.data.findIndex(user => user.id === obj.id);
         if(posicion == -1){
             throw new Error('Error');
         }else{
             let usuarioNuevo = new User(obj.id, obj.nick, obj.email,obj.password);
-            this.data.splice(posicion, 1, usuarioNuevo);
+            let respuestaLibro = await api.changeDBUser(obj);
+            if(respuestaLibro){
+                this.data.splice(posicion, 1, usuarioNuevo);
+            }else{
+                throw new Error('Error');
+            }
+            
             return usuarioNuevo;
         }
     }
@@ -50,6 +69,23 @@ export default class Users{
         this.data.forEach(user => salida += user.toString() + "\n\n");
 
         return salida;
+    }
+
+
+    async changeUserPassword(id,contraseña){
+        let posicion = this.data.findIndex(user => user.id === id);
+        let usuario = this.data.find(user => user.id === id);
+        let respuestaLibro = await api.changeDBUserPassword(id, contraseña);
+        if(usuario === undefined){
+            throw new Error('Error');
+            }else{
+                let usuarioNuevo = new User(usuario.id, usuario.nick, usuario.email,contraseña);
+            if(respuestaLibro){
+                this.data.splice(posicion, 1, usuarioNuevo);
+                return usuarioNuevo;
+                
+            }
+        }
     }
 
      getUserById(userId){

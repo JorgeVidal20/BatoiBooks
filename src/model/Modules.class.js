@@ -1,6 +1,5 @@
 import Module from './Module.class.js'
-
-const NOTES = 'Apunts'
+import * as api from '../services/api.js'
 
 
 export default class Modules{
@@ -10,9 +9,11 @@ constructor(){
     this.nextId = 1;
 }
 
-populate(data){
-    const modulesArray = Array.isArray(data) ? data : data?.modules || [];
-        this.data = modulesArray.map(item => new Module(item.code, item.cliteral, item.vliteral, item.courseId))
+ async populate(){
+    //const modulesArray = Array.isArray(data) ? data : data?.modules || [];
+
+        let modulos =  await api.getDBModules();
+        this.data = modulos.map(item => new Module(item.code, item.cliteral, item.vliteral, item.courseId));
         const maxId = this.data.reduce((max, item) => item.code > max ? item.code : max , 0);
         this.nextId = maxId + 1
     }
@@ -25,7 +26,7 @@ populate(data){
         return salida;
     }
 
-     getModuleByCode( moduleCode){
+    getModuleByCode(moduleCode){
     let modulo = this.data.find(modules => modules.code == moduleCode);
 
     if(!modulo){

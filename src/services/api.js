@@ -13,7 +13,7 @@ export async function getDBUsers(){
     return datos;
     }catch (error){
 
-        return error;
+        return false;
     }
     
 }
@@ -30,8 +30,7 @@ export async function getDBModules(){
 
     return datos;
     }catch (error){
-
-        return error;
+        return false;
     }
     
 }
@@ -49,7 +48,7 @@ export async function getDBBooks(){
     return datos;
     }catch (error){
 
-        return error;
+        return false;
     }
     
 }
@@ -73,7 +72,7 @@ export async function getDBUser(id){
 
 
     }catch(error){
-        return error;
+        return false;
     }
 }
 
@@ -96,7 +95,7 @@ export async function getDBBook(id){
 
 
     }catch(error){
-        return error;
+        return false;
     }
 }
 
@@ -119,7 +118,7 @@ export async function addDBBook(obj){
         return libroCreado;
 
     }catch(error){
-        return error;
+        return false;
     }
 }
 
@@ -127,7 +126,7 @@ export async function addDBUser(obj){
     
     try{
         
-        const respuesta = await fetch(`http://localhost:3000/books`,{
+        const respuesta = await fetch(`http://localhost:3000/users`,{
             method: 'POST', 
             headers: {'Content-Type': 'application/json'},
             
@@ -142,7 +141,7 @@ export async function addDBUser(obj){
         return usuarioCreado;
 
     }catch(error){
-        return error;
+        return false;
     }
 }
 
@@ -162,7 +161,7 @@ export async function removeDBBook(id){
         return "Libro Eliminado con exito";
 
     }catch(error){
-        return error;
+        return false;
     }
 }
 
@@ -181,7 +180,7 @@ export async function removeDBUser(id){
         return "User Eliminado con exito";
 
     }catch(error){
-        return error;
+        return false;
     }
 }
 
@@ -202,7 +201,7 @@ export async function changeDBBook(obj){
         return datos;
 
     }catch(error){
-        return error;
+        return false;
     }
 }
 
@@ -223,7 +222,7 @@ export async function changeDBUser(obj){
         return datos;
 
     }catch(error){
-        return error;
+        return false;
     }
 }
 
@@ -231,7 +230,7 @@ export async function changeDBUserPassword(id, contraseña){
     
     try{
         
-        const respuesta = await fetch(`http://localhost:3000/user/${id}`,{
+        const respuesta = await fetch(`http://localhost:3000/users/${id}`,{
             method: 'PATCH',
             headers: {'Content-Type': 'application/json',},
         body: JSON.stringify({password: contraseña}) 
@@ -244,7 +243,7 @@ export async function changeDBUserPassword(id, contraseña){
         return usuarioActualizado;
 
     }catch(error){
-        return error;
+        return false;
     }
 }
 
