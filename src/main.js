@@ -6,7 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Renderizar la estructura HTML requerida por el Controller/View
     // NOTA: Se debe asegurar que todos los inputs tengan el atributo 'name' para FormData.
     document.body.innerHTML = `
-    <header><h1>BatoiBooks</h1></header>
+    <header>
+        <img src="/logoBatoi.png" alt="Logo de BatoiBooks" style="height: 80px; margin-right: 10px;">
+        <h1>BatoiBooks</h1>
+    </header>
     <nav>
         <ul>
             <li><a href="#list">Ver Libros</a></li>
