@@ -246,5 +246,3 @@ export async function changeDBUserPassword(id, contraseña){
         return false;
     }
 }
-
-

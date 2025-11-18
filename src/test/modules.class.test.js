@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest'
-import Modules from '../model/Modules.class.js'
-import Module from '../model/Module.class.js'
+import Modules from '../model/Modules.class'
+import Module from '../model/Module.class'
 import mockModules from './fixtures/modules.json'
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -29,7 +29,7 @@ describe('Clase Modules', () => {
     const modules = new Modules()
     await modules.populate()
     server.close()
-    expect(modules.data).toHaveLength(2)
+    expect(modules.data).toHaveLength(3)
     for (let i in modules.data) {
       expect(modules.data[i]).toBeInstanceOf(Module)
       for (let prop in modules.data[i]) {

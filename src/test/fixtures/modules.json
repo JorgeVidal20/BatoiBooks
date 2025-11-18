@@ -6,9 +6,15 @@
     "courseId": "12"
   },
   {
+    "code": "ABCD",
+    "cliteral": "Segundo módulo",
+    "vliteral": "Segon mòdul",
+    "courseId": "12"
+  },
+  {
     "code": "BBAA",
     "cliteral": "Otro módulo",
     "vliteral": "Altre mòdul",
-    "courseId": "1ert2"
+    "courseId": "12"
   }
 ]

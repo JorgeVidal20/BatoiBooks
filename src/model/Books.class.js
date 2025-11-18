@@ -10,48 +10,63 @@ export default class Books{
     }
 
     async populate(){
-        //const booksArray = Array.isArray(data) ? data : data?.books || [];
-        //this.data = data.map(item => new Book(item));
-
         let data =  await api.getDBBooks();
         this.data = data.map(item => new Book(item));
-        const maxId = this.data.reduce((max, item) => item.id > max ? item.id : max , 0);
+        
+        // Asegurar que el ID es tratado como un número para encontrar el máximo correctamente.
+        const maxId = this.data.reduce((max, item) => {
+            const currentId = parseInt(item.id);
+            return currentId > max ? currentId : max;
+        } , 0);
         this.nextId = maxId + 1;
     }
-
-     async addBook(obj){
         
-        let respuestaLibro = await api.addDBBook(obj);
-        if(respuestaLibro){
-            let nuevoLibro = new Book(respuestaLibro);
-            this.data.push(nuevoLibro);
-            if (nuevoLibro.id >= this.nextId) {
-            this.nextId = nuevoLibro.id + 1;
-        }
-            return nuevoLibro;
-        }else{
-            throw new Error ('Error');
-            
-        }
-        
+        async addBook(book) {
+        let libroNuevo = new Book(book);
 
+        if(book.id === undefined && this.data.length === 0) {
+            libroNuevo.id = 1;
+        } else {
+            let maxId = this.data.reduce((max, libro) => Math.max(max, Number(libro.id)), 0);
+            libroNuevo.id = maxId + 1;
+            book.id = maxId + 1;
+        }
+
+        let libroNuevoIdString = new Book(book);
+        libroNuevoIdString.id = `${libroNuevo.id}`;
+
+        let responseBook = await api.addDBBook(libroNuevoIdString);
+
+        if (responseBook !== false) {
+            this.data.push(libroNuevo);
+        } else {
+            throw new Error("No se ha podido añadir el libro")
+        }
+
+        
+        return libroNuevo;
     }
 
-    async removeBook(id){
 
-        let posicion = this.data.findIndex(book => book.id === id);
+    async removeBook(id){
+        // Usamos parseInt para comparar estrictamente contra el valor numérico,
+        // ya que el populate asegura que nextId se base en números.
+        const idAsNumber = parseInt(id); 
+
+        // Buscar el índice comparando el valor numérico de la ID del libro.
+        let posicion = this.data.findIndex(book => parseInt(book.id) === idAsNumber);
+        
         if(posicion != -1){
-            let respuestaLibro = await api.removeDBBook(id);
+            // Usamos la ID original (que es numérica desde el controlador) para la API.
+            let respuestaLibro = await api.removeDBBook(id); 
             if(respuestaLibro){
-            this.data.splice(posicion, 1);
+                this.data.splice(posicion, 1);
             }else{
                 throw new Error ("Error");
-            
             } 
         }else{
             throw new Error('Error');
         }
-
     }
 
     async changeBook(obj){

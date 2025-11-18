@@ -88,13 +88,14 @@ export default class Users{
         }
     }
 
-     getUserById(userId){
-    let usuarioId = this.data.find(users => users.id === userId);
+    async getUserById(userId){
+    let usuario = await api.getDBUser(userId);
 
-    if(!usuarioId){
-        throw new Error('Error');
+    if(usuario !== false){
+        let respuestaUser = new User (usuario.id, usuario.nick, usuario.eamil, usuario.password )
+        return respuestaUser;
     }else{
-    return usuarioId;
+    throw new Error('Error');
     }
 }
  getUserIndexById(userId){
@@ -114,5 +115,9 @@ getUserByNickName(nick){
     }else{
         return usuarioConNick;
     }
+}
+// Añadir esto dentro de la clase Users
+get users() {
+    return this.data;
 }
 }

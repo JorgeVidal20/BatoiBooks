@@ -1,0 +1,193 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --light-bg: #f4f7f6;
+    --white: #ffffff;
+    --shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    margin: 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Encabezado y Navegación */
+header {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 1rem 2rem;
+    text-align: center;
+}
+
+header h1 { margin: 0; }
+
+nav {
+    background-color: #34495e;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav a {
+    color: var(--white);
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    display: block;
+    transition: background 0.3s;
+}
+
+nav a:hover { background-color: var(--secondary-color); }
+
+/* Contenedor Principal */
+main {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Tarjetas de Libros */
+#list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.card {
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
+}
+
+.card:hover { transform: translateY(-5px); }
+
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain; /* O cover según prefieras */
+    border-bottom: 1px solid #eee;
+    margin-bottom: 1rem;
+}
+
+.card h3 { color: var(--primary-color); margin: 0.5rem 0; font-size: 1.2rem; }
+.card h4 { color: var(--secondary-color); margin: 0; font-weight: 600; font-size: 1.5rem; } /* Precio */
+.card p { margin: 0.2rem 0; font-size: 0.9rem; color: #666; }
+
+/* Formularios (Añadir y Borrar) */
+#form, #remove {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#form div, #remove div { margin-bottom: 1rem; }
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+textarea { min-height: 100px; resize: vertical; }
+
+button {
+    background-color: var(--secondary-color);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-right: 10px;
+}
+
+button:hover { opacity: 0.9; }
+button[type="reset"] { background-color: #95a5a6; }
+#removeBtn { background-color: var(--accent-color); }
+
+/* Mensajes de alerta */
+#messages {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1001;
+    width: 300px;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.3s ease-out;
+}
+
+.alert-info { background-color: #2ecc71; }
+.alert-danger { background-color: var(--accent-color); }
+
+.alert button {
+    background: none;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 0;
+    margin: 0;
+}
+
+/* Sección Acerca de y Footer */
+#about {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--primary-color);
+    color: #aaa;
+    margin-top: 2rem;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}

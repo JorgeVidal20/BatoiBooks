@@ -35,4 +35,7 @@ constructor(){
         return modulo;
     }
 }
+get modules() {
+    return this.data;
+}
 }
