@@ -48,7 +48,7 @@ export default class View {
     
     // Construir el HTML del libro
     bookCard.innerHTML = `
-      <img src="${book.photo || 'https://via.placeholder.com/150'}" alt="Libro: ${book.id}">
+      <img src="${book.photo}" alt="Libro: ${book.id}">
       <div>
         <h3>${book.moduleCode} (${book.id})</h3>
         <h4>${book.publisher}</h4>
@@ -57,6 +57,16 @@ export default class View {
         <p>${saleStatus}</p>
         <p>${book.comments || ''}</p>
         <h4>${book.price} €</h4>
+
+        <button class="btn-cart" data-id="${book.id}">
+            <span class="material-icons">add_shopping_cart</span>
+        </button>
+        <button class="btn-edit" data-id="${book.id}">
+            <span class="material-icons">edit</span>
+        </button>
+        <button class="btn-delete" data-id="${book.id}">
+            <span class="material-icons">delete</span>
+        </button>
       </div>
     `;
     
@@ -114,20 +124,29 @@ export default class View {
     this.bookForm.addEventListener('submit', (event) => {
       event.preventDefault();
       
-      // Recoger los datos del formulario
       const formData = new FormData(this.bookForm);
-      
+      const btnSave = document.getElementById('btn-save'); 
+      const idInput = document.getElementById('book-id');
+
       const payload = {
         moduleCode: formData.get('moduleCode'),
         publisher: formData.get('publisher'),
         price: parseFloat(formData.get('price')),
         pages: parseInt(formData.get('pages')),
         status: formData.get('status'),
+        soldDate: formData.get('soldDate'),
         comments: formData.get('comments') || '',
         photo: formData.get('photo') || ''
       };
+
+      // LÓGICA DE CLASES
+      if (btnSave.classList.contains('btn-edit')) {
+          payload.id = idInput.value; 
+          payload.action = 'update';
+      } else {
+          payload.action = 'create'; 
+      }
       
-      // Llamar al callback con los datos
       callback(payload);
     });
   }
@@ -156,5 +175,133 @@ export default class View {
     const year = date.getFullYear();
     
     return `${day}/${month}/${year}`;
+  }
+
+
+  bindAddToCart(handler) {
+    if (!this.booksList) return;
+
+    this.booksList.addEventListener('click', (event) => {
+      const button = event.target.closest('.btn-cart');
+
+      if (button) {
+        const id = button.dataset.id;
+        if (id) {
+          handler(id);
+        }
+      }
+    });
+  }
+
+  bindRemoveBook(handler) {
+    if (!this.booksList) return;
+
+    this.booksList.addEventListener('click', (event) => {
+      const button = event.target.closest('.btn-delete');
+
+      if (button && button.dataset.id) {
+        const id = button.dataset.id;
+        handler(id);
+      }
+    });
+  }
+
+  bindEditBook(handler) {
+    this.booksList.addEventListener('click', (event) => {
+      const button = event.target.closest('.btn-edit');
+      if (button && button.dataset.id) {
+        handler(button.dataset.id);
+      }
+    });
+  }
+
+ showEditForm(book) {
+    const title = document.getElementById('form-title');
+    if (title) title.textContent = 'Editar Libro';
+
+    const idGroup = document.getElementById('id-group');
+    const idInput = document.getElementById('book-id');
+    if (idGroup && idInput) {
+        idGroup.classList.remove('hidden'); // Quita la clase oculta
+        idInput.value = book.id;
+    }
+    if (this.bookForm) {
+        this.bookForm.moduleCode.value = book.moduleCode;
+        this.bookForm.publisher.value = book.publisher;
+        this.bookForm.price.value = book.price;
+        this.bookForm.pages.value = book.pages;
+        this.bookForm.comments.value = book.comments || '';
+        this.bookForm.status.value = book.status; 
+        
+        if (book.soldDate) {
+             this.bookForm.soldDate.value = book.soldDate.split('T')[0];
+        }
+    }
+
+    const btnSave = document.getElementById('btn-save');
+    if (btnSave) {
+        btnSave.classList.remove('btn-add');
+        btnSave.classList.add('btn-edit');
+        btnSave.textContent = 'Actualizar';
+    }
+  }
+
+  resetFormMode() {
+    const btnSave = document.getElementById('btn-save');
+    if (btnSave) {
+        btnSave.classList.remove('btn-edit');
+        btnSave.classList.add('btn-add');
+        btnSave.textContent = 'Guardar';
+    }
+
+    const title = document.getElementById('form-title');
+    if (title) title.textContent = 'Añadir Libro';
+
+    const idGroup = document.getElementById('id-group');
+    const idInput = document.getElementById('book-id');
+    
+    if (idGroup) {
+        idGroup.classList.add('hidden'); 
+    }
+    if (idInput) {
+        idInput.value = ''; 
+    }
+  }
+
+updateBookInList(book) {
+    const bookCard = this.booksList.querySelector(`div[data-book-id="${book.id}"]`);
+    
+    if (bookCard) {
+      const saleStatus = book.soldDate 
+        ? `Vendido el ${this.formatDate(book.soldDate)}` 
+        : 'En venta';
+
+      bookCard.innerHTML = `
+        <img src="${book.photo || 'https://via.placeholder.com/150'}" alt="Libro: ${book.id}">
+        <div>
+          <h3>${book.moduleCode} (${book.id})</h3>
+          <h4>${book.publisher}</h4>
+          <p>${book.pages} páginas</p>
+          <p>Estado: ${book.status}</p>
+          <p>${saleStatus}</p>
+          <p>${book.comments || ''}</p>
+          <h4>${book.price} €</h4>
+
+          <div class="actions">
+            <button class="btn-cart" data-id="${book.id}"><span class="material-icons">add_shopping_cart</span></button>
+            <button class="btn-edit" data-id="${book.id}"><span class="material-icons">edit</span></button>
+            <button class="btn-delete" data-id="${book.id}"><span class="material-icons">delete</span></button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  bindReset(handler) {
+    if (!this.bookForm) return;
+
+    this.bookForm.addEventListener('reset', () => {
+        setTimeout(() => handler(), 10); 
+    });
   }
 }

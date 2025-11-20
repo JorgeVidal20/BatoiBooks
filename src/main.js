@@ -1,14 +1,11 @@
 import Controller from './controller/controller.class.js';
 
-// Usamos async para el manejo de DOMContentLoaded por convención, aunque la lógica síncrona es suficiente.
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. Renderizar la estructura HTML requerida por el Controller/View
-    // NOTA: Se debe asegurar que todos los inputs tengan el atributo 'name' para FormData.
     document.body.innerHTML = `
     <header>
         <img src="/logoBatoi.png" alt="Logo de BatoiBooks" style="height: 80px; margin-right: 10px;">
-        <h1>BatoiBooks</h1>
+        <h1>Añadir Libro</h1>
     </header>
     <nav>
         <ul>
@@ -22,14 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <main>
         <div id="list"></div>
-        
-        <div id="remove">
-            <label>Id libro a borrar: <input type="text" id="removeBookId"></label> 
-            <button id="removeBookButton">Eliminar libro</button> 
-        </div>
 
         <div id="form">
             <form id="book-form">
+                <div id="id-group" class="hidden">
+                <label>ID:</label>
+                 <input type="text" id="book-id" name="id" disabled>
+                </div>
                 <div><label>Módulo:</label> <select id="module-code" name="moduleCode" required></select></div>
                 <div><label>Editorial:</label> <input type="text" id="publisher" name="publisher" required></div>
                 <div><label>Precio:</label> <input type="number" id="price" name="price" step="0.01" required></div>
@@ -45,8 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="radio" name="status" value="bad"> Bad
                 </div>
                 <div><label>Comentarios:</label> <textarea id="comments" name="comments"></textarea></div>
-                
-                <button type="submit">Guardar</button>
+                <button type="submit" id="btn-save" class="btn-add">Guardar</button>
                 <button type="reset">Reset</button>
             </form>
         </div>
