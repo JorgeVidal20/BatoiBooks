@@ -1,6 +1,5 @@
 export default class View {
   constructor() {
-    // Propiedades del DOM
     this.booksList = document.getElementById('list');
     this.about = document.getElementById('about');
     this.form = document.getElementById('form');
@@ -12,16 +11,9 @@ export default class View {
     this.idBookInput = document.getElementById('removeBookId');
   }
 
-  /**
-   * Renderiza los módulos en el SELECT del formulario
-   */
   renderModulesInSelect(modules) {
     if (!this.moduleSelect) return;
-    
-    // Limpiar opciones anteriores
     this.moduleSelect.innerHTML = '<option value="">Selecciona un módulo</option>';
-    
-    // Añadir cada módulo como opción
     modules.forEach(module => {
       const option = document.createElement('option');
       option.value = module.code;
@@ -30,25 +22,19 @@ export default class View {
     });
   }
 
-  /**
-   * Renderiza un libro en la lista
-   */
   renderBook(book) {
     if (!this.booksList) return;
     
-    // Crear el div card
     const bookCard = document.createElement('div');
     bookCard.className = 'card';
     bookCard.dataset.bookId = book.id;
     
-    // Determinar si está vendido o en venta
     const saleStatus = book.soldDate 
       ? `Vendido el ${this.formatDate(book.soldDate)}` 
       : 'En venta';
     
-    // Construir el HTML del libro
     bookCard.innerHTML = `
-      <img src="${book.photo}" alt="Libro: ${book.id}">
+      <img src="${book.photo || ''}" alt="Libro: ${book.id}">
       <div>
         <h3>${book.moduleCode} (${book.id})</h3>
         <h4>${book.publisher}</h4>
@@ -57,72 +43,62 @@ export default class View {
         <p>${saleStatus}</p>
         <p>${book.comments || ''}</p>
         <h4>${book.price} €</h4>
-
-        <button class="btn-cart" data-id="${book.id}">
-            <span class="material-icons">add_shopping_cart</span>
-        </button>
-        <button class="btn-edit" data-id="${book.id}">
-            <span class="material-icons">edit</span>
-        </button>
-        <button class="btn-delete" data-id="${book.id}">
-            <span class="material-icons">delete</span>
-        </button>
+        <button class="btn-cart" data-id="${book.id}"><span class="material-icons">add_shopping_cart</span></button>
+        <button class="btn-edit" data-id="${book.id}"><span class="material-icons">edit</span></button>
+        <button class="btn-delete" data-id="${book.id}"><span class="material-icons">delete</span></button>
       </div>
     `;
-    
-    // Añadir el libro a la lista
     this.booksList.appendChild(bookCard);
   }
 
-  /**
-   * Elimina un libro de la vista
-   */
   removeBook(bookId) {
     if (!this.booksList) return;
-    
     const bookCard = this.booksList.querySelector(`[data-book-id="${bookId}"]`);
-    if (bookCard) {
-      bookCard.remove();
-    }
+    if (bookCard) bookCard.remove();
   }
 
- 
   showMessage(type, message) {
     if (!this.messages) return;
     
-    // Crear el div del mensaje
     const messageDiv = document.createElement('div');
     const alertType = type === 'error' ? 'alert-danger' : 'alert-info';
     
-    // Agregar clases necesarias
     messageDiv.className = `error info alert ${alertType} alert-dismissible`;
     messageDiv.setAttribute('role', 'alert');
-    
     messageDiv.innerHTML = `
       ${message}
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="this.parentElement.remove()">x</button>
     `;
-    
-    // Añadir el mensaje al contenedor
     this.messages.appendChild(messageDiv);
     
-    // Si NO es error, cerrar automáticamente después de 3 segundos
     if (type !== 'error') {
       setTimeout(() => {
-        if (messageDiv.parentElement) {
-          messageDiv.remove();
-        }
+        if (messageDiv.parentElement) messageDiv.remove();
       }, 3000);
     }
   }
 
-
-
+  // --- VALIDACIÓN Y ENVÍO ---
   setBookSubmitHandler(callback) {
     if (!this.bookForm) return;
     
     this.bookForm.addEventListener('submit', (event) => {
       event.preventDefault();
+      
+      // 1. Validar formulario
+      if (!this.bookForm.checkValidity()) {
+          const priceInput = this.bookForm.price;
+          const pagesInput = this.bookForm.pages;
+          let msg = 'Revisa los campos obligatorios.';
+
+          // Detectar error específico de número negativo
+          if (priceInput.validity.rangeUnderflow || pagesInput.validity.rangeUnderflow) {
+              msg = 'El precio y las páginas no pueden ser negativos (mínimo 0).';
+          }
+
+          this.showMessage('error', msg);
+          return;
+      }
       
       const formData = new FormData(this.bookForm);
       const btnSave = document.getElementById('btn-save'); 
@@ -139,7 +115,6 @@ export default class View {
         photo: formData.get('photo') || ''
       };
 
-      // LÓGICA DE CLASES
       if (btnSave.classList.contains('btn-edit')) {
           payload.id = idInput.value; 
           payload.action = 'update';
@@ -151,78 +126,54 @@ export default class View {
     });
   }
 
-  
   setBookRemoveHandler(callback) {
     if (!this.removeBtn) return;
-    
     this.removeBtn.addEventListener('click', () => {
-      // Recoger la id del libro a borrar
       const idToRemove = this.idBookInput ? this.idBookInput.value : '';
-      
-      if (idToRemove) {
-        callback(idToRemove);
-      }
+      if (idToRemove) callback(idToRemove);
     });
   }
 
- 
   formatDate(dateString) {
     if (!dateString) return '';
-    
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-    
     return `${day}/${month}/${year}`;
   }
 
-
   bindAddToCart(handler) {
     if (!this.booksList) return;
-
     this.booksList.addEventListener('click', (event) => {
       const button = event.target.closest('.btn-cart');
-
-      if (button) {
-        const id = button.dataset.id;
-        if (id) {
-          handler(id);
-        }
-      }
+      if (button && button.dataset.id) handler(button.dataset.id);
     });
   }
 
   bindRemoveBook(handler) {
     if (!this.booksList) return;
-
     this.booksList.addEventListener('click', (event) => {
       const button = event.target.closest('.btn-delete');
-
-      if (button && button.dataset.id) {
-        const id = button.dataset.id;
-        handler(id);
-      }
+      if (button && button.dataset.id) handler(button.dataset.id);
     });
   }
 
   bindEditBook(handler) {
     this.booksList.addEventListener('click', (event) => {
       const button = event.target.closest('.btn-edit');
-      if (button && button.dataset.id) {
-        handler(button.dataset.id);
-      }
+      if (button && button.dataset.id) handler(button.dataset.id);
     });
   }
 
- showEditForm(book) {
+  showEditForm(book) {
     const title = document.getElementById('form-title');
     if (title) title.textContent = 'Editar Libro';
 
     const idGroup = document.getElementById('id-group');
     const idInput = document.getElementById('book-id');
     if (idGroup && idInput) {
-        idGroup.classList.remove('hidden'); // Quita la clase oculta
+        idGroup.classList.remove('hidden');
         idInput.value = book.id;
     }
     if (this.bookForm) {
@@ -259,18 +210,12 @@ export default class View {
 
     const idGroup = document.getElementById('id-group');
     const idInput = document.getElementById('book-id');
-    
-    if (idGroup) {
-        idGroup.classList.add('hidden'); 
-    }
-    if (idInput) {
-        idInput.value = ''; 
-    }
+    if (idGroup) idGroup.classList.add('hidden'); 
+    if (idInput) idInput.value = ''; 
   }
 
-updateBookInList(book) {
+  updateBookInList(book) {
     const bookCard = this.booksList.querySelector(`div[data-book-id="${book.id}"]`);
-    
     if (bookCard) {
       const saleStatus = book.soldDate 
         ? `Vendido el ${this.formatDate(book.soldDate)}` 
@@ -286,7 +231,6 @@ updateBookInList(book) {
           <p>${saleStatus}</p>
           <p>${book.comments || ''}</p>
           <h4>${book.price} €</h4>
-
           <div class="actions">
             <button class="btn-cart" data-id="${book.id}"><span class="material-icons">add_shopping_cart</span></button>
             <button class="btn-edit" data-id="${book.id}"><span class="material-icons">edit</span></button>
@@ -299,7 +243,6 @@ updateBookInList(book) {
 
   bindReset(handler) {
     if (!this.bookForm) return;
-
     this.bookForm.addEventListener('reset', () => {
         setTimeout(() => handler(), 10); 
     });

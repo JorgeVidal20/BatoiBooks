@@ -21,15 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
         <div id="list"></div>
 
         <div id="form">
-            <form id="book-form">
+            <form id="book-form" novalidate>
                 <div id="id-group" class="hidden">
                 <label>ID:</label>
                  <input type="text" id="book-id" name="id" disabled>
                 </div>
                 <div><label>Módulo:</label> <select id="module-code" name="moduleCode" required></select></div>
                 <div><label>Editorial:</label> <input type="text" id="publisher" name="publisher" required></div>
-                <div><label>Precio:</label> <input type="number" id="price" name="price" step="0.01" required></div>
-                <div><label>Páginas:</label> <input type="number" id="pages" name="pages" required></div>
+                <div><label>Precio:</label> <input type="number" id="price" name="price" step="0.01" min="0" required></div>
+                <div><label>Páginas:</label> <input type="number" id="pages" name="pages"  min="0"  required></div>
                 
                 <div><label>Fecha de Venta:</label> <input type="date" id="soldDate" name="soldDate"></div>
                 
