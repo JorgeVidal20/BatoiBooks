@@ -1,5 +1,5 @@
 import Books from '../model/Books.class.js';
-import Modules from '../model/Modules.class.js'; 
+import Modules from '../model/Modules.class.js';
 import View from '../view/view.class.js';
 import Cart from '../model/Cart.class.js';
 
@@ -28,6 +28,13 @@ export default class Controller {
       this.view.bindRemoveBook(this.handleRemoveBook.bind(this));
       this.view.bindEditBook(this.handleEditBook.bind(this));
       this.view.bindReset(this.handleReset.bind(this));
+
+      // Cart handlers
+      this.cart.populate();
+      this.view.renderCart(this.cart);
+      this.view.bindRemoveFromCart(this.handleRemoveFromCart.bind(this));
+      this.view.bindCheckout(this.handleCheckout.bind(this));
+      this.view.bindClearCart(this.handleClearCart.bind(this));
     } catch (error) {
       this.view.showMessage('error', `Error al cargar datos iniciales: ${error.message}`);
     }
@@ -39,7 +46,7 @@ export default class Controller {
   async handleSubmitBook(payload) {
     try {
       if (payload.action === 'update') {
-        
+
         const updatedBook = await this.books.changeBook(payload);
         this.view.updateBookInList(updatedBook);
         this.view.showMessage('info', 'Libro editado correctamente');
@@ -49,11 +56,11 @@ export default class Controller {
         const newBook = await this.books.addBook(payload);
         this.view.renderBook(newBook);
         this.view.showMessage('info', `Libro añadido con ID: ${newBook.id}`);
-      
+
       }
 
       this.view.bookForm.reset();
-      this.view.resetFormMode(); 
+      this.view.resetFormMode();
 
     } catch (error) {
       this.view.showMessage('error', `Error: ${error.message}`);
@@ -67,8 +74,8 @@ export default class Controller {
     const bookId = parseInt(idToRemove, 10);
 
     if (isNaN(bookId)) {
-        this.view.showMessage('error', 'Error: La ID debe ser un número.');
-        return;
+      this.view.showMessage('error', 'Error: La ID debe ser un número.');
+      return;
     }
 
     try {
@@ -83,14 +90,44 @@ export default class Controller {
   }
 
 
-     handleAddToCart(id) {
+  handleAddToCart(id) {
     try {
       const book = this.books.getBookById(id);
       this.cart.addItem(book);
+      this.view.renderCart(this.cart);
       this.view.showMessage('info', 'Libro añadido al carrito ');
     } catch (error) {
-      console.error(error); 
+      console.error(error);
       this.view.showMessage('error', 'El libro ya está en el carrito.');
+    }
+  }
+
+  handleRemoveFromCart(id) {
+    try {
+      this.cart.removeItem(id);
+      this.view.renderCart(this.cart);
+      this.view.showMessage('info', 'Libro eliminado del carrito');
+    } catch (error) {
+      this.view.showMessage('error', 'Error al eliminar del carrito');
+    }
+  }
+
+  handleCheckout() {
+    if (this.cart.data.length === 0) {
+      this.view.showMessage('error', 'El carrito está vacío');
+      return;
+    }
+    alert('Compra realizada con éxito');
+    this.cart.clear();
+    this.view.renderCart(this.cart);
+  }
+
+  handleClearCart() {
+    if (this.cart.data.length === 0) return;
+    if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+      this.cart.clear();
+      this.view.renderCart(this.cart);
+      this.view.showMessage('info', 'Carrito vaciado');
     }
   }
 
@@ -113,7 +150,7 @@ export default class Controller {
     try {
       const book = this.books.getBookById(id);
       this.view.showEditForm(book);
-      
+
     } catch (error) {
       this.view.showMessage('error', 'No se pudo cargar el libro para editar');
     }

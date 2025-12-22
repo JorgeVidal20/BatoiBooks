@@ -1,7 +1,7 @@
 import Controller from './controller/controller.class.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     document.body.innerHTML = `
     <header>
         <img src="/logoBatoi.png" alt="Logo de BatoiBooks" style="height: 80px; margin-right: 10px;">
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <ul>
             <li><a href="#list">Ver Libros</a></li>
             <li><a href="#form">Añadir Libro</a></li>
+            <li><a href="#cart">Carrito</a></li>
             <li><a href="#about">Acerca de...</a></li>
         </ul>
     </nav>
@@ -45,6 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button type="reset">Reset</button>
             </form>
         </div>
+        
+        <div id="cart" class="hidden"></div>
         
         <div id="about">
             <p>Lorem ipsum...</p>
